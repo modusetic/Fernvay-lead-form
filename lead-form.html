@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Get Your Free AI Solution — Fernvay Consulting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Page-specific overrides ── */
+    .lead-hero {
+      background: linear-gradient(150deg, #0b1a30 0%, #0d2448 45%, #162d5e 100%);
+      padding: 9rem 2rem 5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lead-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 15%, rgba(201, 168, 76, .13) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 40% at 80% 80%, rgba(30, 64, 128, .35) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .lead-hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .lead-hero .section-label {
+      color: var(--gold-light);
+    }
+
+    .lead-hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .lead-hero h1 em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .lead-hero p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 300;
+      color: rgba(244, 241, 236, .75);
+      line-height: 1.65;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    /* ── Form section ── */
+    .lead-form-section {
+      background: var(--white);
+      padding: 5rem 2rem 7rem;
+    }
+
+    .lead-form-inner {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .form-group textarea {
+      min-height: 150px;
+    }
+
+    /* Submit button full-width */
+    .form-submit-full {
+      width: 100%;
+      padding: 1rem 2rem;
+      font-size: .8rem;
+      letter-spacing: .16em;
+      margin-top: .4rem;
+    }
+
+    /* ── Success state ── */
+    .success-state {
+      display: none;
+      text-align: center;
+      padding: 3rem 2rem;
+      animation: fadeUp .7s ease both;
+    }
+
+    .success-state.visible {
+      display: block;
+    }
+
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.8rem;
+    }
+
+    .success-icon svg {
+      width: 30px;
+      height: 30px;
+      color: var(--navy);
+    }
+
+    .success-state h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 300;
+      color: var(--navy);
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .success-state h2 em {
+      font-style: italic;
+      color: var(--steel);
+    }
+
+    .success-state p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      color: var(--steel);
+      line-height: 1.7;
+      max-width: 420px;
+      margin: 0 auto 2rem;
+    }
+
+    /* ── Error message ── */
+    .form-error {
+      display: none;
+      background: rgba(180, 50, 50, .08);
+      border: 1px solid rgba(180, 50, 50, .25);
+      padding: .85rem 1.1rem;
+      font-size: .82rem;
+      color: #8b2020;
+      line-height: 1.5;
+      margin-top: .5rem;
+    }
+
+    .form-error.visible {
+      display: block;
+    }
+
+    /* ── Loading state on button ── */
+    .btn-loading {
+      opacity: .65;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .btn-loading::after {
+      content: ' ...';
+    }
+
+    /* ── Trust badges ── */
+    .trust-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      font-size: .63rem;
+      font-weight: 500;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--steel);
+    }
+
+    .trust-item svg {
+      width: 14px;
+      height: 14px;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="/">
+      <img src="assets/images/Fernvay_Logo_Lightback.svg" alt="Fernvay Consulting" height="36" />
+    </a>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/#services">Services</a></li>
+      <li><a href="/#contact" class="nav-cta">Contact</a></li>
+    </ul>
+    <button class="hamburger" aria-label="Toggle menu" onclick="this.nextElementSibling; document.querySelector('nav ul').classList.toggle('nav-open')">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="lead-hero">
+    <div class="lead-hero-content">
+      <p class="section-label">Free AI Consultation</p>
+      <h1>Tell us your biggest bottleneck.<br /><em>We'll solve it instantly.</em></h1>
+      <p>Enter your details below and our AI assistant will draft a custom solution — delivered straight to your inbox in seconds.</p>
+    </div>
+  </section>
+
+  <!-- FORM -->
+  <section class="lead-form-section">
+    <div class="lead-form-inner">
+
+      <!-- The form -->
+      <form class="contact-form" id="leadForm" novalidate>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" placeholder="Jane Smith" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Business Email</label>
+            <input type="email" id="email" name="email" placeholder="jane@company.com" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bottleneck">What is your biggest business bottleneck?</label>
+          <textarea id="bottleneck" name="bottleneck" placeholder="e.g. We spend 10+ hours a week manually following up with leads and it still falls through the cracks..." required></textarea>
+        </div>
+
+        <div class="form-error" id="formError"></div>
+
+        <button type="submit" class="btn btn-primary form-submit-full" id="submitBtn">
+          Get My Free AI Solution
+        </button>
+
+      </form>
+
+      <!-- Success state (hidden until submit) -->
+      <div class="success-state" id="successState">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <h2>Check your inbox — our<br /><em>AI assistant</em> just drafted<br />a solution for you!</h2>
+        <p>We've sent a custom strategy to your email. While you're here, let's talk about making it a reality.</p>
+        <a href="/#contact" class="btn btn-primary">Schedule a Discovery Call</a>
+      </div>
+
+      <!-- Trust row -->
+      <div class="trust-row">
+        <span class="trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          No spam, ever
+        </span>
+        <span class="trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Response in seconds
+        </span>
+        <span class="trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          100% free
+        </span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2025 Fernvay Consulting, LLC. All rights reserved.</p>
+    <p><a href="mailto:hello@fernvayconsulting.com">hello@fernvayconsulting.com</a></p>
+  </footer>
+
+  <script>
+    const form = document.getElementById('leadForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const successState = document.getElementById('successState');
+    const formError = document.getElementById('formError');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const bottleneck = document.getElementById('bottleneck').value.trim();
+
+      // Basic validation
+      if (!name || !email || !bottleneck) {
+        showError('Please fill in all fields before submitting.');
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showError('Please enter a valid email address.');
+        return;
+      }
+
+      // Loading state
+      formError.classList.remove('visible');
+      submitBtn.classList.add('btn-loading');
+      submitBtn.textContent = 'Generating your solution';
+
+      try {
+        const response = await fetch('/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, bottleneck }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Something went wrong. Please try again.');
+        }
+
+        // Show success
+        form.style.display = 'none';
+        successState.classList.add('visible');
+
+      } catch (err) {
+        showError(err.message);
+        submitBtn.classList.remove('btn-loading');
+        submitBtn.textContent = 'Get My Free AI Solution';
+      }
+    });
+
+    function showError(msg) {
+      formError.textContent = msg;
+      formError.classList.add('visible');
+    }
+  </script>
+
+</body>
+</html>

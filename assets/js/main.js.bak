@@ -1,0 +1,94 @@
+document.addEventListener( 'DOMContentLoaded', function () {
+
+	// ── Star field ──────────────────────────────────────────────────────────
+	var starsEl = document.getElementById( 'stars' );
+	if ( starsEl ) {
+		for ( var i = 0; i < 90; i++ ) {
+			var s    = document.createElement( 'div' );
+			var size = Math.random() * 2.5 + 0.4;
+			s.classList.add( 'star' );
+			s.style.cssText =
+				'width:'   + size                    + 'px;' +
+				'height:'  + size                    + 'px;' +
+				'top:'     + ( Math.random() * 100 ) + '%;'  +
+				'left:'    + ( Math.random() * 100 ) + '%;'  +
+				'--d:'     + ( 2 + Math.random() * 4 ) + 's;' +
+				'--delay:-'+ ( Math.random() * 6 )  + 's;';
+			starsEl.appendChild( s );
+		}
+	}
+
+	// ── Scroll reveal ───────────────────────────────────────────────────────
+	var obs = new IntersectionObserver( function ( entries ) {
+		entries.forEach( function ( e ) {
+			if ( e.isIntersecting ) {
+				e.target.classList.add( 'visible' );
+				obs.unobserve( e.target );
+			}
+		} );
+	}, { threshold: 0.1 } );
+
+	document.querySelectorAll( '.reveal' ).forEach( function ( r ) {
+		obs.observe( r );
+	} );
+
+	// ── Hamburger toggle ────────────────────────────────────────────────────
+	var hamburger = document.querySelector( '.hamburger' );
+	var navUl     = document.querySelector( 'nav ul' );
+
+	if ( hamburger && navUl ) {
+		hamburger.addEventListener( 'click', function () {
+			navUl.classList.toggle( 'nav-open' );
+		} );
+
+		// Support keyboard activation (Enter / Space).
+		hamburger.addEventListener( 'keydown', function ( e ) {
+			if ( e.key === 'Enter' || e.key === ' ' ) {
+				e.preventDefault();
+				navUl.classList.toggle( 'nav-open' );
+			}
+		} );
+
+		// Close the mobile menu when any nav link is clicked.
+		navUl.querySelectorAll( 'a' ).forEach( function ( a ) {
+			a.addEventListener( 'click', function () {
+				navUl.classList.remove( 'nav-open' );
+			} );
+		} );
+	}
+
+	// ── Formspree async submit ──────────────────────────────────────────────
+	// Exposed on window so the form's onsubmit="handleSubmit(event)" can reach it.
+	window.handleSubmit = async function ( e ) {
+		e.preventDefault();
+		var form = e.target;
+		var btn  = form.querySelector( 'button[type="submit"]' );
+		btn.textContent = 'Sending\u2026';
+		btn.disabled    = true;
+
+		try {
+			var res = await fetch( 'https://formspree.io/f/xzdaqwlo', {
+				method:  'POST',
+				headers: { 'Accept': 'application/json' },
+				body:    new FormData( form ),
+			} );
+
+			if ( res.ok ) {
+				form.style.display = 'none';
+				var successEl = document.getElementById( 'form-success' );
+				if ( successEl ) {
+					successEl.style.display = 'block';
+				}
+			} else {
+				btn.textContent = 'Send Message';
+				btn.disabled    = false;
+				alert( 'Something went wrong. Please try again or email us directly.' );
+			}
+		} catch ( err ) {
+			btn.textContent = 'Send Message';
+			btn.disabled    = false;
+			alert( 'Something went wrong. Please check your connection and try again.' );
+		}
+	};
+
+} );
