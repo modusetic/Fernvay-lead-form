@@ -1,18 +1,8 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT, 10),
-  secure: process.env.SMTP_SECURE === 'true',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-});
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -28,6 +18,8 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid email address.' });
   }
 
+  // ── Step 1: Generate AI response ──────────────────────────────
+  let aiResponse;
   try {
     const prompt = `You are a senior AI automation and business systems consultant at Fernvay Consulting — a boutique consultancy that helps small and mid-size businesses streamline operations using AI and modern automation tools.
 
@@ -45,20 +37,28 @@ Write a warm, professional, and genuinely helpful email response directly to ${n
 Tone: expert but approachable, confident but not salesy. Length: 300–400 words. Do not include a subject line. Start directly with the greeting.`;
 
     const result = await model.generateContent(prompt);
-    const aiResponse = result.response.text();
+    aiResponse = result.response.text();
+  } catch (err) {
+    console.error('Gemini error:', err);
+    return res.status(500).json({ error: 'AI generation failed. Check GEMINI_API_KEY.' });
+  }
 
-    const emailHtml = buildEmailHtml(name, bottleneck, aiResponse);
+  // ── Step 2: Send email via Resend ─────────────────────────────
+  try {
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const fromAddress = process.env.EMAIL_FROM || 'Fernvay Consulting <onboarding@resend.dev>';
 
-    await transporter.sendMail({
-      from: `"Fernvay Consulting" <${process.env.EMAIL_USER}>`,
+    await resend.emails.send({
+      from: fromAddress,
       to: email,
       subject: `Your custom AI solution is here, ${name.split(' ')[0]}`,
-      html: emailHtml,
+      html: buildEmailHtml(name, bottleneck, aiResponse),
     });
 
+    // BCC notify email if set
     if (process.env.NOTIFY_EMAIL) {
-      await transporter.sendMail({
-        from: `"Fernvay Lead Capture" <${process.env.EMAIL_USER}>`,
+      await resend.emails.send({
+        from: fromAddress,
         to: process.env.NOTIFY_EMAIL,
         subject: `New lead: ${name} — ${email}`,
         html: `<p><strong>Name:</strong> ${name}</p>
@@ -66,19 +66,16 @@ Tone: expert but approachable, confident but not salesy. Length: 300–400 words
                <p><strong>Bottleneck:</strong> ${bottleneck}</p>
                <hr/>
                <p><strong>AI Response sent:</strong></p>
-               <pre style="white-space:pre-wrap;">${aiResponse}</pre>`,
+               <pre style="white-space:pre-wrap;">${escapeHtml(aiResponse)}</pre>`,
       });
     }
-
-    return res.json({ success: true });
-
   } catch (err) {
-    console.error('Submission error:', err);
-    return res.status(500).json({
-      error: 'We ran into an issue generating your solution. Please try again in a moment.',
-    });
+    console.error('Resend email error:', err);
+    return res.status(500).json({ error: 'Email delivery failed. Check RESEND_API_KEY and EMAIL_FROM.' });
   }
-}
+
+  return res.json({ success: true });
+};
 
 function buildEmailHtml(name, bottleneck, aiBody) {
   const bodyHtml = aiBody

@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const path = require('path');
 
@@ -12,16 +12,8 @@ app.use(express.static(path.join(__dirname)));
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-// ── Init Nodemailer (Hostinger SMTP) ────────────────────────────
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT, 10),
-  secure: process.env.SMTP_SECURE === 'true', // true for port 465, false for 587
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-});
+// ── Init Resend ──────────────────────────────────────────────────
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // ── POST /submit ─────────────────────────────────────────────────
 app.post('/submit', async (req, res) => {
@@ -57,19 +49,20 @@ Tone: expert but approachable, confident but not salesy. Length: 300–400 words
 
     // 2. Build branded HTML email
     const emailHtml = buildEmailHtml(name, bottleneck, aiResponse);
+    const fromAddress = process.env.EMAIL_FROM || 'Fernvay Consulting <onboarding@resend.dev>';
 
     // 3. Send to the lead
-    await transporter.sendMail({
-      from: `"Fernvay Consulting" <${process.env.EMAIL_USER}>`,
+    await resend.emails.send({
+      from: fromAddress,
       to: email,
       subject: `Your custom AI solution is here, ${name.split(' ')[0]}`,
       html: emailHtml,
     });
 
-    // 4. Optional: BCC yourself so you capture every lead
+    // 4. Optional: notify yourself of every lead
     if (process.env.NOTIFY_EMAIL) {
-      await transporter.sendMail({
-        from: `"Fernvay Lead Capture" <${process.env.EMAIL_USER}>`,
+      await resend.emails.send({
+        from: fromAddress,
         to: process.env.NOTIFY_EMAIL,
         subject: `New lead: ${name} — ${email}`,
         html: `<p><strong>Name:</strong> ${name}</p>
