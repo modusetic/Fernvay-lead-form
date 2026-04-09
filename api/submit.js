@@ -73,12 +73,18 @@ Tone: expert but approachable, confident but not salesy. Length: 200-250 words. 
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
     const fromAddress = process.env.EMAIL_FROM || 'Fernvay Consulting <onboarding@resend.dev>';
+    const siteUrl = process.env.SITE_URL || 'https://fernvayconsulting.com';
 
     await resend.emails.send({
       from: fromAddress,
       to: email,
       subject: `Your custom AI solution is here, ${name.split(' ')[0]}`,
       html: buildEmailHtml(name, bottleneck, aiResponse),
+      text: buildEmailText(name, aiResponse, siteUrl),
+      headers: {
+        'List-Unsubscribe': `<mailto:${process.env.EMAIL_USER}?subject=unsubscribe>, <${siteUrl}>`,
+        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+      },
     });
 
     // BCC notify email if set
@@ -102,6 +108,17 @@ Tone: expert but approachable, confident but not salesy. Length: 200-250 words. 
 
   return res.json({ success: true });
 };
+
+function buildEmailText(name, aiBody, siteUrl) {
+  return `${aiBody}
+
+---
+Schedule a free 30-minute discovery call: ${siteUrl}/#contact
+
+Fernvay Consulting, LLC | ${siteUrl}
+You received this because you requested a free AI solution at ${siteUrl}.
+To unsubscribe, reply with "unsubscribe" in the subject line.`;
+}
 
 function buildEmailHtml(name, bottleneck, aiBody) {
   const bodyHtml = aiBody
