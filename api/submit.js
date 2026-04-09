@@ -123,7 +123,7 @@ function buildEmailHtml(name, bottleneck, aiBody) {
       <td align="center">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;">
           <tr>
-            <td style="background:linear-gradient(150deg,#0b1a30 0%,#0d2448 50%,#162d5e 100%);padding:40px 48px 36px;text-align:center;">
+            <td style="background:#0d2448;background:linear-gradient(150deg,#0b1a30 0%,#0d2448 50%,#162d5e 100%);padding:40px 48px 36px;text-align:center;">
               <p style="margin:0 0 6px 0;font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:#c9a84c;">Fernvay Consulting</p>
               <h1 style="margin:0;font-family:Georgia,serif;font-size:28px;font-weight:300;color:#f4f1ec;line-height:1.2;">
                 Your Custom AI Solution<br/>
