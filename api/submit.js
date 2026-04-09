@@ -26,13 +26,12 @@ A potential client named ${name} has shared their biggest business bottleneck:
 "${bottleneck}"
 
 Write a warm, professional, and genuinely helpful email response directly to ${name}. The email should:
-1. Open by acknowledging their specific challenge with empathy
-2. Offer 2–3 concrete, actionable strategies using AI or automation that could realistically solve it
-3. Be specific — name tools or approaches where relevant (e.g. Zapier, Make, AI agents, CRM automation, etc.)
-4. Subtly position Fernvay Consulting as the natural partner to implement this
-5. Close with a soft, non-pushy invitation to schedule a free 30-minute discovery call
 
-Tone: expert but approachable, confident but not salesy. Length: 300–400 words. Do not include a subject line. Start directly with the greeting.`;
+Open by acknowledging their specific challenge with empathy
+Offer 2–3 concrete, actionable strategies using AI or automation that could realistically solve it in simple, easy to understand, non-technical language
+Subtly position Fernvay Consulting as the natural partner to implement this
+Close with a soft, non-pushy invitation to schedule a free 30-minute discovery call
+Tone: expert but approachable, confident but not salesy. Length: 200-250 words. Do not include a subject line. Start directly with the greeting.`;
 
   // ── Step 1: Generate AI response ──────────────────────────────
   let aiResponse;
