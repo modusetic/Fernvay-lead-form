@@ -140,7 +140,7 @@ function buildEmailHtml(name, bottleneck, aiBody) {
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;">
           <tr>
             <td style="background:#0d2448;background:linear-gradient(150deg,#0b1a30 0%,#0d2448 50%,#162d5e 100%);padding:40px 48px 36px;text-align:center;">
-              <img src="${process.env.SITE_URL || 'https://fernvay-lead-form.vercel.app'}/assets/images/Fernvay_Logo_Darkback.svg"
+              <img src="${process.env.ASSETS_URL || 'https://fernvay-lead-form.vercel.app'}/assets/images/Fernvay_Logo_Darkback.svg"
                    alt="Fernvay Consulting" width="180" height="auto"
                    style="display:block;margin:0 auto 24px;width:180px;max-width:100%;" />
               <h1 style="margin:0;font-family:Georgia,serif;font-size:28px;font-weight:300;color:#f4f1ec;line-height:1.2;">
