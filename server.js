@@ -10,7 +10,7 @@ app.use(express.static(path.join(__dirname)));
 
 // ── Init Gemini ──────────────────────────────────────────────────
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
 // ── Init Resend ──────────────────────────────────────────────────
 const resend = new Resend(process.env.RESEND_API_KEY);
