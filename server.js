@@ -2,17 +2,14 @@ require('dotenv').config();
 const express = require('express');
 const { Resend } = require('resend');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const OpenAI = require('openai');
 const path = require('path');
 
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-// ── Init Gemini ──────────────────────────────────────────────────
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-
-// ── Init Resend ──────────────────────────────────────────────────
+const AI_PROVIDER = (process.env.AI_PROVIDER || 'groq').toLowerCase();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // ── POST /submit ─────────────────────────────────────────────────
@@ -28,7 +25,6 @@ app.post('/submit', async (req, res) => {
   }
 
   try {
-    // 1. Generate AI solution via Gemini
     const prompt = `You are a senior AI automation and business systems consultant at Fernvay Consulting — a boutique consultancy that helps small and mid-size businesses streamline operations using AI and modern automation tools.
 
 A potential client named ${name} has shared their biggest business bottleneck:
@@ -44,8 +40,34 @@ Write a warm, professional, and genuinely helpful email response directly to ${n
 
 Tone: expert but approachable, confident but not salesy. Length: 300–400 words. Do not include a subject line. Start directly with the greeting.`;
 
-    const result = await model.generateContent(prompt);
-    const aiResponse = result.response.text();
+    // 1. Generate AI solution via configured provider
+    let aiResponse;
+    if (AI_PROVIDER === 'gemini') {
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+      const result = await model.generateContent(prompt);
+      aiResponse = result.response.text();
+    } else if (AI_PROVIDER === 'openai') {
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 600,
+      });
+      aiResponse = completion.choices[0].message.content;
+    } else {
+      // Default: Groq (free, Llama 3.3 70B)
+      const groq = new OpenAI({
+        apiKey: process.env.GROQ_API_KEY,
+        baseURL: 'https://api.groq.com/openai/v1',
+      });
+      const completion = await groq.chat.completions.create({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 600,
+      });
+      aiResponse = completion.choices[0].message.content;
+    }
 
     // 2. Build branded HTML email
     const emailHtml = buildEmailHtml(name, bottleneck, aiResponse);

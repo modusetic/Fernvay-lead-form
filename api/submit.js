@@ -1,8 +1,9 @@
 const { Resend } = require('resend');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const OpenAI = require('openai');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+// AI provider is controlled by the AI_PROVIDER env var: 'gemini' | 'openai' | 'groq'
+const AI_PROVIDER = (process.env.AI_PROVIDER || 'groq').toLowerCase();
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -18,10 +19,7 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid email address.' });
   }
 
-  // ── Step 1: Generate AI response ──────────────────────────────
-  let aiResponse;
-  try {
-    const prompt = `You are a senior AI automation and business systems consultant at Fernvay Consulting — a boutique consultancy that helps small and mid-size businesses streamline operations using AI and modern automation tools.
+  const prompt = `You are a senior AI automation and business systems consultant at Fernvay Consulting — a boutique consultancy that helps small and mid-size businesses streamline operations using AI and modern automation tools.
 
 A potential client named ${name} has shared their biggest business bottleneck:
 
@@ -36,11 +34,40 @@ Write a warm, professional, and genuinely helpful email response directly to ${n
 
 Tone: expert but approachable, confident but not salesy. Length: 300–400 words. Do not include a subject line. Start directly with the greeting.`;
 
-    const result = await model.generateContent(prompt);
-    aiResponse = result.response.text();
+  // ── Step 1: Generate AI response ──────────────────────────────
+  let aiResponse;
+  try {
+    if (AI_PROVIDER === 'gemini') {
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+      const result = await model.generateContent(prompt);
+      aiResponse = result.response.text();
+
+    } else if (AI_PROVIDER === 'openai') {
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 600,
+      });
+      aiResponse = completion.choices[0].message.content;
+
+    } else {
+      // Default: Groq (free, uses Llama 3.3 70B)
+      const groq = new OpenAI({
+        apiKey: process.env.GROQ_API_KEY,
+        baseURL: 'https://api.groq.com/openai/v1',
+      });
+      const completion = await groq.chat.completions.create({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 600,
+      });
+      aiResponse = completion.choices[0].message.content;
+    }
   } catch (err) {
-    console.error('Gemini error:', err);
-    return res.status(500).json({ error: 'AI generation failed. Check GEMINI_API_KEY.' });
+    console.error(`AI error (provider: ${AI_PROVIDER}):`, err);
+    return res.status(500).json({ error: `AI generation failed (${AI_PROVIDER}). Check your API key.` });
   }
 
   // ── Step 2: Send email via Resend ─────────────────────────────
