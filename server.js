@@ -162,7 +162,7 @@ function buildEmailHtml(name, bottleneck, aiBody) {
               <table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
                 <tr>
                   <td style="background:#c9a84c;">
-                    <a href="https://fernvayconsulting.com/#contact"
+                    <a href="https://www.fernvayconsulting.com/discovery-call/"
                        style="display:inline-block;padding:14px 36px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;text-decoration:none;color:#0d1f3c;">
                       Schedule a Free Discovery Call
                     </a>
