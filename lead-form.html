@@ -315,6 +315,18 @@
       formError.textContent = msg;
       formError.classList.add('visible');
     }
+
+    // Tell the parent iframe to resize whenever content height changes
+    function postHeight() {
+      window.parent.postMessage(
+        { type: 'fernvay-resize', height: document.body.scrollHeight },
+        '*'
+      );
+    }
+
+    // Fire on load and whenever DOM changes (success state, errors, etc.)
+    postHeight();
+    new ResizeObserver(postHeight).observe(document.body);
   </script>
 
 </body>
